@@ -1,18 +1,22 @@
+#imports ReGex modules
 import re
 
 class Grafo:
     def __init__(self):
         pass
     
-    def adicionar_atributo(self, nome_atributo, valor): #função mágica que adiciona um atributo na classe
-        setattr(self, nome_atributo, valor)             #é só adicionar o nome do atributo e seu valor
+    #função que adiciona um atributo na classe
+    def adicionar_atributo(self, nome_atributo, valor) -> None: 
+        setattr(self, nome_atributo, valor)     #é só adicionar o nome do atributo e seu valor
 
-    def graphPattern(self, string): #identifica se o padrão do txt é válido
-        test = r"^\s*V\s*=\s*{[0-9]?[,0-9]*};\s*A\s*=\s*{[\(0-9,0-9\)]?[,\(0-9,0-9\)]*};$"#regex mágica do grafooooo
+    #identifica se o padrão do txt é válido
+    def graphPattern(self, string) -> bool: 
+        test = r"^\s*V\s*=\s*{[0-9]?[,0-9]*};\s*A\s*=\s*{[\(0-9,0-9\)]?[,\(0-9,0-9\)]*};$" #regex do grafo
         result = re.match(test, string)
         return bool(result)
     
-    def readtxt(self): #lê o conteúdo do .txt e retorna seu conteúdo
+    #lê o conteúdo do .txt e retorna seu conteúdo
+    def readtxt(self) -> str: 
         nameArq = input("insira o nome do arquivo que contém o grafo: ")
         graphArq = open(nameArq, "r")
         content = graphArq.read()
@@ -20,9 +24,10 @@ class Grafo:
         if(self.graphPattern(content)):
             return content
         else:
-            print("O padrão do arquivo está incorreto!")
-        
-    def readGraphString(self, graphString): #lê a string e produz os vértices e arestas
+            print("O padrão do arquivo está incorreto!")    
+    
+    #lê a string e produz os vértices e arestas
+    def readGraphString(self, graphString) -> None: 
         vertContent = graphString.split('V = ')[1].split(';')[0].strip() #separa em 2 partes usando "V = ", e pega a segunda parte.
         vertContent = vertContent.strip("{}")                            #separa em 2 partes de novo, desta vez com ";", e pega a primeira parte
         vertContent = vertContent.split(",")                             #por fim, elimina os espaços em branco em volta da string
