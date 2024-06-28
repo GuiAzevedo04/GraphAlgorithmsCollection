@@ -2,8 +2,17 @@ import re
 
 class Grafo:
     def __init__(self):
-        pass
+        self.vertices = []
+        self.arestas = []
     
+    def add_vertice(self, vert):
+        if vert not in self.vertices:
+            self.vertices.append(vert)
+
+    def add_aresta(self, u, v):
+        if (u,v) not in self.aresta:
+            self.vertices.append((u,v))
+
     def adicionar_atributo(self, nome_atributo, valor): #função mágica que adiciona um atributo na classe
         setattr(self, nome_atributo, valor)             #é só adicionar o nome do atributo e seu valor
 
@@ -25,17 +34,16 @@ class Grafo:
     def readGraphString(self, graphString): #lê a string e produz os vértices e arestas
         vertContent = graphString.split('V = ')[1].split(';')[0].strip() #separa em 2 partes usando "V = ", e pega a segunda parte.
         vertContent = vertContent.strip("{}")                            #separa em 2 partes de novo, desta vez com ";", e pega a primeira parte
-        vertContent = vertContent.split(",")                             #por fim, elimina os espaços em branco em volta da string
+        self.vertices = list(map(int, vertContent.split(",")))           #por fim, elimina os espaços em branco em volta da string e guarda
         
-        self.adicionar_atributo('vertices', vertContent)                 #cria um novo atributo chamado 'vertices'
 
         edgeContent = graphString.split('A = ')[1].split(';')[0].strip()
         edgeContent = edgeContent.strip("{}")
         edgeArray = []
         for x in edgeContent.split('),('): #divide edgeContent por '),('
             x = x.strip("()")
-            u, v = x.split(',')            #guarda cada membro da aresta em u e v
+            u, v = list(map(int, x.split(',')))            #guarda cada membro da aresta em u e v
             edgeArray.append((u,v))        #guarda u e v na lista
 
-        self.adicionar_atributo('arestas', edgeArray) #cria um novo atributo chamado 'arestas'
+        self.arestas = edgeArray #guarda o array em arestas
 
