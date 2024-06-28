@@ -4,9 +4,10 @@ import re
 class Graph:
     
     #Class constructor
-    def __init__(self):
+    def __init__(self, is_directed):
         self.vertices = []
         self.edges = []
+        directed = is_directed
     
     #Adds new vertices to the graph
     def add_vertice(self, vertice) -> None:
