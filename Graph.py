@@ -58,9 +58,24 @@ class Graph:
             for x in edge_content.split('),('): 
                 x = x.strip("()")
                 u, v = list(map(int, x.split(',')))         #Stores each edge member in 'u' and 'v'
-                edge_array.append((u,v))                    #Stores 'u' and 'v' in the edge_array list
+                edge_array.append([u,v])                    #Stores 'u' and 'v' in the edge_array list | Piassi eu troquei os () por [] :3
 
-            self.edges = edge_array 
+            self.edges = edge_array
         except:
             print("File pattern is incorrect")
 
+    #Create a graph matrix
+    def create_matrix(self) -> list:
+        self.read_graph_string()
+        matrix_size = [0] * len(self.vertices)       #Cria uma lista com o tanto de 0 que tiver no vertice
+        graph_matrix = []                            #Inicializa a matriz do grafo
+
+        for i in range(len(self.vertices)):
+            graph_matrix.append(matrix_size.copy())  #Cria a matriz com cópias independentes da lista, criando uma matriz quadrada de 0
+
+        for i in self.edges:
+            line = i[0] - 1
+            column = i[1] - 1
+            graph_matrix[line][column] = 1           #Substitui a posição indicada pelo número 1, simbolizando que tem uma aresta
+
+        return graph_matrix
