@@ -21,6 +21,7 @@ class Graph:
     def __init__(self):
         self.vertices = []
         self.edges = []
+        self.matriz_adjacencia = []
         self.is_direcionado = True
 
     # Reads the file content and returns its content
@@ -55,6 +56,25 @@ class Graph:
 
         except:
             print('Houve um erro na leitura')
+
+    def matriz_adjacencia(self):
+        matrix = []
+        
+        for _ in self.vertices:
+            insert = []
+            for _ in self.vertices:
+                insert.append(-1)
+
+            matrix.append(insert)
+
+        for x in self.edges:
+            vetor_temp = x.split(' ')
+            vertice1 = int(vetor_temp[1])
+            vertice2 = int(vetor_temp[2])
+
+            matrix[vertice1][vertice2] = int(vetor_temp[3])
+        
+        self.matriz_adjacencia = matrix
 
 
 def main():
