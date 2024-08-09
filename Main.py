@@ -20,44 +20,45 @@ class Graph:
     # Class constructor
     def __init__(self):
         self.vertices = []
-        self.edges = []
+        self.edges = [] #formato: [indice, v1, v2, peso]
         self.matriz_adjacencia = []
+        self.n_vertices = 0
+        self.n_edges = 0
         self.is_direcionado = True
 
-    # Reads the file content and returns its content
-    def read_txt(self) -> str:
-        file_name = input("Please, insert the .txt file name here: ")
+    #função para entrada dos dados
+    def read_graph_data(self) -> None:
         try:
-            file = open(file_name + '.txt', "r")                
-            file_content = file.read()
-            file.close()
+            self.n_vertices, self.n_edges = map(int, input("Enter number of vertices and edges: ").split())
+            direcionado_str = input("Is the graph directed (digite 'nao_direcionado' para não direcionado)? ").strip()
 
-            return file_content
-        except:
-            return None
-
-    # Reads the string containing the graph and creates its vertices and edges
-    def read_graph_string(self) -> None:
-        graph_string = self.read_txt()
-
-        try:
-            infos = graph_string.split('\n')
-            n_vertices = infos[0].split(' ')[0]
-            n_arestas = int(infos[0].split(' ')[1])
-
-            if(infos[1] == 'nao_direcionado'):
+            if direcionado_str == 'nao_direcionado':
                 self.is_direcionado = False
             
-            for x in range(2, n_arestas + 2):
-                self.edges.append(infos[x])
+            print("Enter each edge in the format: [index] [vertex1] [vertex2] [weight]")
+            for x in range(self.n_edges):
+                self.edges.append(list(input().split(' ')))
+                for i in range(len(self.edges[x])):
+                    self.edges[x][i] = int(self.edges[x][i])
 
-            for x in range(n_vertices):
-                self.vertices.append(x)
+            for x in self.edges:
+                temp_vert1 = x[1]
+                temp_vert2 = x[2]
+                
+                if temp_vert1 not in self.vertices:
+                    self.vertices.append(temp_vert1)
+                
+                if temp_vert2 not in self.vertices:
+                    self.vertices.append(temp_vert2)
 
-        except:
-            print('Houve um erro na leitura')
 
-    def matriz_adjacencia(self):
+            self.vertices.sort()
+
+        except ValueError as e:
+            print(f"Houve um erro na leitura: {e}")
+
+    #cria uma matriz de adjacência pro grafo
+    def define_matriz_adjacencia(self):
         matrix = []
         
         for _ in self.vertices:
@@ -68,14 +69,19 @@ class Graph:
             matrix.append(insert)
 
         for x in self.edges:
-            vetor_temp = x.split(' ')
+            vetor_temp = x
             vertice1 = int(vetor_temp[1])
             vertice2 = int(vetor_temp[2])
 
             matrix[vertice1][vertice2] = int(vetor_temp[3])
+
+        if self.is_direcionado == False: #torna a matriz simétrica
+            for i in range(self.n_vertices):
+                for j in range(self.n_vertices):
+                    if(matrix[i][j] != -1):
+                        matrix[j][i] = matrix[i][j]
         
         self.matriz_adjacencia = matrix
-
 
 def main():
     user_input = str
