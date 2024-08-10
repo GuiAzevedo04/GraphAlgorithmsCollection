@@ -83,6 +83,29 @@ class Graph:
         
         self.matriz_adjacencia = matrix
 
+    #Realiza uma DFS que retorna a ordem dos vertices percorridos
+    def DFS_conexo(self, v_inicial):
+        visitados = []
+        pilha = [v_inicial]
+
+        while pilha:
+            v_atual = pilha.pop()
+            if v_atual not in visitados:
+                visitados.append(v_atual)
+                for neighbor in range(self.n_vertices):
+                    if self.matriz_adjacencia[v_atual][neighbor] != -1 and neighbor not in visitados:
+                        pilha.append(neighbor)
+
+        return visitados
+    
+    #verifica se o tamanho do vetor de vértices retornado pela DFS é igual ao número de vértices do grafo
+    def verifica_conexidade (self):
+         n_visitados = len(self.DFS_conexo(self.vertices[0]))
+         if n_visitados != self.n_vertices:
+             return False
+         else:
+             return True
+
 def main():
     user_input = str
     close_program = False
