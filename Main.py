@@ -17,8 +17,7 @@ def interface_text() -> None:
 
 class Graph:
 
-    # Class constructor
-    def __init__(self):
+    def __init__(self): # Class constructor
         self.vertices = []
         self.edges = [] #formato: [indice, v1, v2, peso]
         self.matriz_adjacencia = []
@@ -26,8 +25,7 @@ class Graph:
         self.n_edges = 0
         self.is_direcionado = True
 
-    #função para entrada dos dados
-    def read_graph_data(self) -> None:
+    def read_graph_data(self) -> None: #função para entrada dos dados
         try:
             self.n_vertices, self.n_edges = map(int, input("Enter number of vertices and edges: ").split())
             direcionado_str = input("Is the graph directed (digite 'nao_direcionado' para não direcionado)? ").strip()
@@ -57,8 +55,7 @@ class Graph:
         except ValueError as e:
             print(f"Houve um erro na leitura: {e}")
 
-    #cria uma matriz de adjacência pro grafo
-    def define_matriz_adjacencia(self):
+    def define_matriz_adjacencia(self):#cria uma matriz de adjacência pro grafo
         matrix = []
         
         for _ in self.vertices:
@@ -76,15 +73,19 @@ class Graph:
             matrix[vertice1][vertice2] = int(vetor_temp[3])
 
         if self.is_direcionado == False: #torna a matriz simétrica
-            for i in range(self.n_vertices):
-                for j in range(self.n_vertices):
-                    if(matrix[i][j] != -1):
-                        matrix[j][i] = matrix[i][j]
+            matrix = self.faz_matriz_simetrica(matrix)
         
         self.matriz_adjacencia = matrix
 
-    #Realiza uma DFS que retorna a ordem dos vertices percorridos
-    def DFS_conexo(self, v_inicial):
+    def faz_matriz_simetrica(self, matrix): #retorna uma matriz simétrica
+        for i in range(self.n_vertices):
+                for j in range(self.n_vertices):
+                    if(matrix[i][j] != -1):
+                        matrix[j][i] = matrix[i][j]
+
+        return matrix
+
+    def DFS_vertices_percorridos(self, v_inicial, matrix): #DFS que retorna os vértices percorridos
         visitados = []
         pilha = [v_inicial]
 
@@ -93,19 +94,56 @@ class Graph:
             if v_atual not in visitados:
                 visitados.append(v_atual)
                 for neighbor in range(self.n_vertices):
-                    if self.matriz_adjacencia[v_atual][neighbor] != -1 and neighbor not in visitados:
+                    if matrix[v_atual][neighbor] != -1 and neighbor not in visitados:
                         pilha.append(neighbor)
 
         return visitados
     
-    #verifica se o tamanho do vetor de vértices retornado pela DFS é igual ao número de vértices do grafo
     def verifica_conexidade (self):
-         n_visitados = len(self.DFS_conexo(self.vertices[0]))
-         if n_visitados != self.n_vertices:
-             return False
-         else:
-             return True
+        if (self.is_direcionado == False): #se o grafo não for direcionado, verifica se normalmente
+            matrix_temp = self.matriz_adjacencia
+        else: #se for direcionado, verifica-se sua conexidade fraca ignorando sua conexidade
+            matrix_temp = self.faz_matriz_simetrica(self.matriz_adjacencia)
+        #se o tamano do vetor retornado pela DFS não for igual ao número de vértices o grafo não é conexo
+        n_visitados = len(self.DFS_vertices_percorridos(self.vertices[0], matrix_temp)) 
+        if n_visitados != self.n_vertices:
+            return False
+        else:
+            return True    
+        
+    def verifica_bipartido(self): #verifica se o grafo é bipartido, usando o metodo de coloração
+        color = [-1] * self.n_vertices # Inicializar um vetor de cores onde -1 indica que o vértice não foi colorido
+        
+        for i in range(self.n_vertices):
+            if color[i] == -1:  # Se o vértice não foi colorido, iniciar BFS
+                if not self.is_bipartite_component(i, color):
+                    return False
+        
+        return True
 
+    def is_bipartite_component(self, start, color): #a partir de um vertice inicial, verifica se o componente é bipartido
+        if(self.is_direcionado == False):
+            #usar BFS para colorir os vértices
+            queue = [start]
+            color[start] = 0  #iniciar com a primeira cor
+
+            while queue:
+                v = queue.pop(0)
+
+                for neighbor in range(self.n_vertices):
+                    if self.matriz_adjacencia[v][neighbor] != -1:#Verificar adjacência
+                        if color[neighbor] == -1:
+                            #colorir o vizinho com a cor oposta
+                            color[neighbor] = 1 - color[v]
+                            queue.append(neighbor)
+                        elif color[neighbor] == color[v]:
+                            #se um vizinho tem a mesma cor, o grafo não é bipartido
+                            return False
+        
+            return True
+        else: return False
+
+    
 def main():
     user_input = str
     close_program = False
