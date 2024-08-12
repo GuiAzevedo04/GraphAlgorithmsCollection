@@ -143,6 +143,38 @@ class Graph:
             return True
         else: return False
 
+    def verifica_euleriano(self):
+        if not self.verifica_conexidade():
+            return False  #o grafo não é conexo, então não é euleriano
+        
+        if self.is_direcionado:
+            #para grafos direcionados, verificar se todos os vértices têm grau de entrada igual ao grau de saída
+            grau_entrada = [0] * self.n_vertices
+            grau_saida = [0] * self.n_vertices
+            
+            for edge in self.edges:
+                v1, v2 = edge[1], edge[2]
+                grau_saida[v1] += 1
+                grau_entrada[v2] += 1
+            
+            for i in range(self.n_vertices):
+                if grau_entrada[i] != grau_saida[i]:
+                    return False
+            
+        else:
+            #para grafos não direcionados, verificar se todos os vértices têm grau par
+            grau = [0] * self.n_vertices
+            
+            for edge in self.edges:
+                v1, v2 = edge[1], edge[2]
+                grau[v1] += 1
+                grau[v2] += 1
+            
+            for g in grau:
+                if g % 2 != 0:
+                    return False
+        
+        return True #se todas as condições forem atendidas, o grafo é euleriano
     
 def main():
     user_input = str
