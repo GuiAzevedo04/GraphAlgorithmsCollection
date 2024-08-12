@@ -103,12 +103,13 @@ class Graph:
         
         for i in range(self.n_vertices):
             if color[i] == -1:  # Se o vértice não foi colorido, iniciar BFS
-                if not self.is_bipartite_component(i, color):
+                if not self.verifica_componente_bipartido(i, color):
                     return False
         
         return True
 
-    def is_bipartite_component(self, start, color):  # a partir de um vertice inicial, verifica se o componente é bipartido
+    # a partir de um vertice inicial, verifica se o componente é bipartido
+    def verifica_componente_bipartido(self, start, color):
         if not self.is_direcionado:
             # usar BFS para colorir os vértices
             queue = [start]
@@ -166,19 +167,19 @@ class Graph:
 
 
 def main():
-    user_input = str
+    user_input = input("").lower()
     close_program = False
+    meu_grafo = Graph()
+    meu_grafo.read_graph_data()
     while not close_program:
-
-        user_input = input("").lower()
 
         match user_input:
             case '0':
-                print("ToDo")
+                print(int(meu_grafo.verifica_conexidade()))
             case '1':
-                print("ToDo")
+                print(int(meu_grafo.verifica_bipartido()))
             case '2':
-                print("ToDo")
+                print(int(meu_grafo.verifica_euleriano()))
             case '3':
                 print("ToDo")
             case '4':
