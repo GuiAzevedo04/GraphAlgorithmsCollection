@@ -168,7 +168,49 @@ class Graph:
                     return False
 
         return True  # se todas as condições forem atendidas, o grafo é euleriano
+    
+    def tem_ciclo(self): #função que verifica se há um ciclo no grafo
+        visitados = [False] * self.n_vertices #vetor com os ertices visitados em cada iteração, para garantir a verificação de todos os conjuntos
 
+        for i in range(self.n_vertices):
+            if not visitados[i]:
+                if self.dfs_ciclo(i, visitados):
+                    return True
+        return False
+
+    def dfs_ciclo(self, start, visitados): #dfs que verifica a existência de ciclos
+        visitados_atual = [False] * self.n_vertices 
+        pilha = [start]
+        pais = [-1] * self.n_vertices  #vetor que registra o pai de cada vértice
+        pais[start] = -1
+
+        while pilha:
+            v_atual = pilha.pop()
+            visitados[v_atual] = True
+            visitados_atual[v_atual] = True
+            vetor_ancestrais = self.retorna_ancestrais(v_atual, pais) #retorna os ancestrais do vertice atual
+
+            for vizinho in range(self.n_vertices):
+                if self.matriz_adjacencia[v_atual][vizinho] != -1:
+                    pais[vizinho] = v_atual
+                    if vizinho in vetor_ancestrais:
+                        return True # se o vizinho for um dos ancestrais, achamos um ciclo
+                    if vizinho not in visitados_atual:
+                        pilha.append(vizinho)
+
+        return False
+        
+    def retorna_ancestrais(self, inicial, pais): #função que retorna os ancestrais de uma folha em relação a raiz
+        vetor_ancestrais = []
+        filho = inicial
+        pai = 0
+        while pai != -1:
+            pai = pais[filho]
+            vetor_ancestrais.append(pai)
+            filho = pai
+
+        return vetor_ancestrais 
+    
 
 def main():
 
