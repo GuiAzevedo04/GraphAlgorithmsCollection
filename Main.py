@@ -211,7 +211,31 @@ class Graph:
 
         return vetor_ancestrais 
     
-    def kosaraju(self):
+    def conta_componentes_conexas(self): #retorna quantos componentes conexos tem um grafo não orientado
+        visitados = [False] * self.n_vertices
+        n_componentes = 0
+
+        for v in range(self.n_vertices):
+            if not visitados[v]:
+                self.dfs_componentes(v, visitados) # faz uma dfs e conta quantas iterações foram necessárias para passar por todos os componentes
+                n_componentes += 1
+
+        return n_componentes
+
+    def dfs_componentes(self, start, visitados):
+        pilha = [start]
+
+        while pilha:
+            v = pilha.pop()
+            if not visitados[v]:
+                visitados[v] = True
+
+                # Adiciona todos os vizinhos não visitados à pilha
+                for vizinho in range(self.n_vertices):
+                    if self.matriz_adjacencia[v][vizinho] != -1 and not visitados[vizinho]:
+                        pilha.append(vizinho)
+    
+    def kosaraju(self): #verifica quantos componentes conexos tem um grafo orientado
         # Passo 1: Fazer a primeira DFS para calcular a ordem de término dos vértices
         visitados = [False] * self.n_vertices
         ordem_termino = []
