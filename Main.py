@@ -211,6 +211,78 @@ class Graph:
 
         return vetor_ancestrais 
     
+    def kosaraju(self):
+        # Passo 1: Fazer a primeira DFS para calcular a ordem de término dos vértices
+        visitados = [False] * self.n_vertices
+        ordem_termino = []
+
+        for v in range(self.n_vertices):
+            if not visitados[v]:
+                self.dfs_ordem_termino(v, visitados, ordem_termino)
+
+        # Passo 2: Transpor o grafo
+        grafo_transposto = self.transpor_grafo()
+
+        # Passo 3: Fazer DFS no grafo transposto na ordem inversa da ordem de término
+        visitados = [False] * self.n_vertices
+        scc_count = 0
+
+        while ordem_termino:
+            v = ordem_termino.pop()
+            if not visitados[v]:
+                grafo_transposto.dfs_visit(v, visitados)
+                scc_count += 1  # Cada DFS completa encontra uma componente fortemente conexa
+
+        return scc_count
+
+    def dfs_ordem_termino(self, start, visitados, ordem_termino):
+        pilha = [start]
+        visitados_locais = [False] * self.n_vertices  # Para controlar os nós já processados localmente
+
+        while pilha:
+            v = pilha[-1]  # Pega o vértice do topo da pilha
+            if not visitados[v]:
+                visitados[v] = True
+                visitados_locais[v] = False  # Marca que ainda não foi processado localmente
+
+            # Itera sobre os vizinhos
+            for vizinho in range(self.n_vertices):
+                if self.matriz_adjacencia[v][vizinho] != -1 and not visitados[vizinho]:
+                    pilha.append(vizinho)
+                    break
+            else:
+                # Se todos os vizinhos foram visitados ou não há mais vizinhos
+                if not visitados_locais[v]:
+                    ordem_termino.append(v)
+                    visitados_locais[v] = True
+                pilha.pop()
+
+    def transpor_grafo(self):
+        grafo_transposto = Graph()
+        grafo_transposto.n_vertices = self.n_vertices
+        grafo_transposto.is_direcionado = True
+
+        grafo_transposto.matriz_adjacencia = [[-1 for _ in range(self.n_vertices)] for _ in range(self.n_vertices)]
+
+        for v1 in range(self.n_vertices):
+            for v2 in range(self.n_vertices):
+                if self.matriz_adjacencia[v1][v2] != -1:
+                    grafo_transposto.matriz_adjacencia[v2][v1] = self.matriz_adjacencia[v1][v2]
+
+        return grafo_transposto
+
+    def dfs_visit(self, start, visitados):
+        pilha = [start]
+
+        while pilha:
+            v = pilha.pop()
+            if not visitados[v]:
+                visitados[v] = True
+
+            # Adiciona os vizinhos não visitados na pilha
+            for vizinho in range(self.n_vertices - 1, -1, -1):  # Ordem inversa para simular a chamada recursiva
+                if self.matriz_adjacencia[v][vizinho] != -1 and not visitados[vizinho]:
+                    pilha.append(vizinho)   
 
 def main():
 
