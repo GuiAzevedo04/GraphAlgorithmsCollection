@@ -308,7 +308,7 @@ class Graph:
                 if self.matriz_adjacencia[v][vizinho] != -1 and not visitados[vizinho]:
                     pilha.append(vizinho)   
 
-    def conta_pontes(self):
+    def conta_pontes(self): #conta as arestas pontes existentes em um grafo
         # Inicializações
         self.tempo = 0  # Tempo de descoberta na DFS
         visitados = [False] * self.n_vertices
@@ -346,6 +346,46 @@ class Graph:
                     low[u] = min(low[u], discovery[v])
 
         return bridges
+    def imprime_arvore_profundidade(self):
+        visitados = [False] * self.n_vertices
+        pilha = [(0, -1)]  # pilha com tuplas (vértice atual, aresta usada para chegar aqui)
+        arestas_arvore = []
+
+        while pilha:
+            v_atual, id_aresta = pilha.pop()
+            if not visitados[v_atual]:
+                visitados[v_atual] = True
+                if id_aresta != -1:
+                    arestas_arvore.append(id_aresta) #adiciona na lista o id da aretesa utilizada pata chegar em v_atual
+
+                vizinhos = []
+                for vizinho in range(self.n_vertices):
+                    if self.matriz_adjacencia[v_atual][vizinho] != -1 and not visitados[vizinho]:
+                        id_aresta_vizinho = self.get_edge_id(v_atual, vizinho)
+                        vizinhos.append((vizinho, id_aresta_vizinho))
+
+                vizinhos.sort()  # Ordena os vizinhos em ordem lexicográfica
+                pilha.extend(vizinhos[::-1])  # Adiciona os vizinhos à pilha na ordem lexicográfica
+
+        # Imprimir os identificadores das arestas da árvore
+        string_id_aresta = ''
+        for id_aresta in sorted(arestas_arvore):
+            string_id_aresta += str(id_aresta) + '  '
+        
+        return string_id_aresta
+
+    def get_edge_id(self, v1, v2): #pega o id de aresta através do par de vertices
+        if self.is_direcionado:
+            for edge in self.edges:
+                if(edge[1] == v1 and edge[2] == v2):
+                    return edge[0]
+        else:
+            for edge in self.edges:
+                if (edge[1] == v1 and edge[2] == v2) or (edge[1] == v2 and edge[2] == v1):
+                    return edge[0]
+                
+        return -1
+
 
 def main():
 
