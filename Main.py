@@ -306,72 +306,70 @@ class Graph:
             # Adiciona os vizinhos não visitados na pilha
             for vizinho in range(self.n_vertices - 1, -1, -1):  # Ordem inversa para simular a chamada recursiva
                 if self.matriz_adjacencia[v][vizinho] != -1 and not visitados[vizinho]:
-                    pilha.append(vizinho)
+                    pilha.append(vizinho)   
 
-    def find_articulation_points(self):
-        def tarjan_dfs(u, tempo):
-            visitados[u] = True
-            descoberta[u] = menor[u] = tempo[0]
-            tempo[0] += 1
-            filhos = 0
-
-            for v in range(self.n_vertices):
-                if self.matriz_adjacencia[u][v] != -1:  # Se há uma aresta de u para v
-                    if not visitados[v]:
-                        pai[v] = u
-                        filhos += 1
-                        tarjan_dfs(v, tempo)
-                        menor[u] = min(menor[u], menor[v])
-
-                        if pai[u] is None and filhos > 1:
-                            articulacao[u] = True
-                        if pai[u] is not None and menor[v] >= descoberta[u]:
-                            articulacao[u] = True
-                    elif v != pai[u]:
-                        menor[u] = min(menor[u], descoberta[v])
-
+    def conta_pontes(self):
+        # Inicializações
+        self.tempo = 0  # Tempo de descoberta na DFS
         visitados = [False] * self.n_vertices
-        descoberta = [float('inf')] * self.n_vertices
-        menor = [float('inf')] * self.n_vertices
-        pai = [None] * self.n_vertices
-        articulacao = [False] * self.n_vertices
-        tempo = [0]
+        discovery = [-1] * self.n_vertices  # Tempo de descoberta dos vértices
+        low = [-1] * self.n_vertices  # Valor low dos vértices
+        parent = [-1] * self.n_vertices  # Vetor para armazenar os pais dos vértices na DFS
+        bridges = 0  # Contador de arestas ponte
 
         for i in range(self.n_vertices):
             if not visitados[i]:
-                tarjan_dfs(i, tempo)
+                bridges += self.dfs_conta_pontes(i, visitados, discovery, low, parent)
 
-        pontos_de_articulacao = [i for i, is_articulation in enumerate(articulacao) if is_articulation]
-        return pontos_de_articulacao
+        return bridges
 
+    def dfs_conta_pontes(self, u, visitados, discovery, low, parent):
+        visitados[u] = True
+        discovery[u] = low[u] = self.tempo
+        self.tempo += 1
+        bridges = 0
+
+        for v in range(self.n_vertices):
+            if self.matriz_adjacencia[u][v] != -1:  # Verifica adjacência
+                if not visitados[v]:  # Se o vizinho não foi visitado, explorar
+                    parent[v] = u
+                    bridges += self.dfs_conta_pontes(v, visitados, discovery, low, parent)
+
+                    # Atualiza o valor de low para o vértice atual
+                    low[u] = min(low[u], low[v])
+
+                    # Verifica se a aresta (u, v) é uma ponte
+                    if low[v] > discovery[u]:
+                        bridges += 1
+
+                elif v != parent[u]:  # Atualiza low[u] para arestas de retorno
+                    low[u] = min(low[u], discovery[v])
+
+        return bridges
 
 def main():
 
     close_program = False
     meu_grafo = Graph()
     meu_grafo.read_graph_data()
-    meu_grafo.define_matriz_adjacencia()
 
     while not close_program:
 
         match meu_grafo.instrucoes[0]:
             case 0:
-                print(int(meu_grafo.verifica_conexidade()))
+                print("ToDo instrucao 0")
             case 1:
-                print(int(meu_grafo.verifica_bipartido()))
+                print("ToDo instrucao 1")
             case 2:
-                print(int(meu_grafo.verifica_euleriano()))
+                print("ToDo instrucao 2")
             case 3:
-                print(int(meu_grafo.tem_ciclo()))
+                print("ToDo instrucao 3")
             case 4:
-                print(meu_grafo.conta_componentes_conexas())
+                print("ToDo instrucao 4")
             case 5:
-                print(meu_grafo.kosaraju())
+                print("ToDo instrucao 5")
             case 6:
-                if meu_grafo.is_direcionado:
-                    print("-1")
-                else:
-                    print(meu_grafo.find_articulation_points())
+                print("ToDo instrucao 6")
             case 7:
                 print("ToDo instrucao 7")
             case 8:
