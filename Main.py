@@ -346,7 +346,7 @@ class Graph:
                     low[u] = min(low[u], discovery[v])
 
         return bridges
-    def imprime_arvore_profundidade(self):
+    def imprime_arvore_profundidade(self): #DFS que imprime o id das arestas utilizadas na busca
         visitados = [False] * self.n_vertices
         pilha = [(0, -1)]  # pilha com tuplas (vértice atual, aresta usada para chegar aqui)
         arestas_arvore = []
@@ -373,6 +373,35 @@ class Graph:
             string_id_aresta += str(id_aresta) + '  '
         
         return string_id_aresta
+    
+    def imprime_arvore_largura(self): #BFS que imprime o id das arestas utilizadas na busca
+        visitados = [False] * self.n_vertices
+        fila = [(0, -1)]  # fila com tuplas (vértice atual, aresta usada para chegar aqui)
+        arestas_arvore = []
+
+        while fila:
+            v_atual, id_aresta = fila.pop()
+            if not visitados[v_atual]:
+                visitados[v_atual] = True
+                if id_aresta != -1:
+                    arestas_arvore.append(id_aresta) #adiciona na lista o id da aretesa utilizada pata chegar em v_atual
+
+                vizinhos = []
+                for vizinho in range(self.n_vertices):
+                    if self.matriz_adjacencia[v_atual][vizinho] != -1 and not visitados[vizinho]:
+                        id_aresta_vizinho = self.get_edge_id(v_atual, vizinho)
+                        vizinhos.append((vizinho, id_aresta_vizinho))
+
+                vizinhos.sort()  # Ordena os vizinhos em ordem lexicográfica
+                fila.extend(vizinhos[::-1])  # Adiciona os vizinhos à pilha na ordem lexicográfica
+
+        # Imprimir os identificadores das arestas da árvore
+        string_id_aresta = ''
+        for id_aresta in sorted(arestas_arvore):
+            string_id_aresta += str(id_aresta) + '  '
+        
+        return string_id_aresta
+
 
     def get_edge_id(self, v1, v2): #pega o id de aresta através do par de vertices
         if self.is_direcionado:
