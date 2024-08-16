@@ -306,31 +306,72 @@ class Graph:
             # Adiciona os vizinhos não visitados na pilha
             for vizinho in range(self.n_vertices - 1, -1, -1):  # Ordem inversa para simular a chamada recursiva
                 if self.matriz_adjacencia[v][vizinho] != -1 and not visitados[vizinho]:
-                    pilha.append(vizinho)   
+                    pilha.append(vizinho)
+
+    def find_articulation_points(self):
+        def tarjan_dfs(u, tempo):
+            visitados[u] = True
+            descoberta[u] = menor[u] = tempo[0]
+            tempo[0] += 1
+            filhos = 0
+
+            for v in range(self.n_vertices):
+                if self.matriz_adjacencia[u][v] != -1:  # Se há uma aresta de u para v
+                    if not visitados[v]:
+                        pai[v] = u
+                        filhos += 1
+                        tarjan_dfs(v, tempo)
+                        menor[u] = min(menor[u], menor[v])
+
+                        if pai[u] is None and filhos > 1:
+                            articulacao[u] = True
+                        if pai[u] is not None and menor[v] >= descoberta[u]:
+                            articulacao[u] = True
+                    elif v != pai[u]:
+                        menor[u] = min(menor[u], descoberta[v])
+
+        visitados = [False] * self.n_vertices
+        descoberta = [float('inf')] * self.n_vertices
+        menor = [float('inf')] * self.n_vertices
+        pai = [None] * self.n_vertices
+        articulacao = [False] * self.n_vertices
+        tempo = [0]
+
+        for i in range(self.n_vertices):
+            if not visitados[i]:
+                tarjan_dfs(i, tempo)
+
+        pontos_de_articulacao = [i for i, is_articulation in enumerate(articulacao) if is_articulation]
+        return pontos_de_articulacao
+
 
 def main():
 
     close_program = False
     meu_grafo = Graph()
     meu_grafo.read_graph_data()
+    meu_grafo.define_matriz_adjacencia()
 
     while not close_program:
 
         match meu_grafo.instrucoes[0]:
             case 0:
-                print("ToDo instrucao 0")
+                print(int(meu_grafo.verifica_conexidade()))
             case 1:
-                print("ToDo instrucao 1")
+                print(int(meu_grafo.verifica_bipartido()))
             case 2:
-                print("ToDo instrucao 2")
+                print(int(meu_grafo.verifica_euleriano()))
             case 3:
-                print("ToDo instrucao 3")
+                print(int(meu_grafo.tem_ciclo()))
             case 4:
-                print("ToDo instrucao 4")
+                print(meu_grafo.conta_componentes_conexas())
             case 5:
-                print("ToDo instrucao 5")
+                print(meu_grafo.kosaraju())
             case 6:
-                print("ToDo instrucao 6")
+                if meu_grafo.is_direcionado:
+                    print("-1")
+                else:
+                    print(meu_grafo.find_articulation_points())
             case 7:
                 print("ToDo instrucao 7")
             case 8:
