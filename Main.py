@@ -15,34 +15,22 @@ class Graph:
         self.is_direcionado = True
         self.instrucoes = []
 
-    def read_graph_data(self) -> None:  # função para entrada dos dados
+    def read_graph_data(self) -> None: #função para entrada dos dados
         try:
-
-            self.instrucoes = list(map(int, input("").split()))
-
             self.n_vertices, self.n_edges = map(int, input("Enter number of vertices and edges: ").split())
             direcionado_str = input("Is the graph directed (digite 'nao_direcionado' para não direcionado)? ").strip()
 
             if direcionado_str == 'nao_direcionado':
                 self.is_direcionado = False
-
+            
             print("Enter each edge in the format: [index] [vertex1] [vertex2] [weight]")
             for x in range(self.n_edges):
                 self.edges.append(list(input().split(' ')))
                 for i in range(len(self.edges[x])):
                     self.edges[x][i] = int(self.edges[x][i])
 
-            for x in self.edges:
-                temp_vert1 = x[1]
-                temp_vert2 = x[2]
-
-                if temp_vert1 not in self.vertices:
-                    self.vertices.append(temp_vert1)
-
-                if temp_vert2 not in self.vertices:
-                    self.vertices.append(temp_vert2)
-
-            self.vertices.sort()
+            for x in range(self.n_vertices):
+                    self.vertices.append(x)
 
         except ValueError as e:
             print(f"Houve um erro na leitura: {e}")
