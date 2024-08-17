@@ -2,6 +2,7 @@
 # Alunos: Guilherme Luiz de Azevedo, Henrique Assis Moreira, Mateus Piassi de Carvalho
 # Universidade Federal de Lavras - UFLA, 2024/01
 
+import heapq
 
 class Graph:
 
@@ -414,6 +415,56 @@ class Graph:
                     return edge[0]
                 
         return -1
+    
+    def prim(self):
+        if not self.edges:
+            return -1
+
+        # Verifica se todas as arestas têm o mesmo peso
+        try:
+            weights = {peso for _, _, _, peso in self.edges}
+        except ValueError:
+            return -1
+
+        if len(weights) == 1:
+            return -1
+
+        # Lista de adjacência
+        adj = {i: [] for i in range(self.n_vertices)}
+        for edge in self.edges:
+            if len(edge) != 4:
+                return -1
+            id_aresta, u, v, peso = edge
+            if not (0 <= u < self.n_vertices and 0 <= v < self.n_vertices):
+                return -1
+            adj[u].append((peso, v, id_aresta))
+            adj[v].append((peso, u, id_aresta))
+
+        # Inicializa a árvore geradora mínima
+        mst_weight = 0
+        visitado = [False] * self.n_vertices
+        min_heap = [(0, 0, -1)]  # (peso, vértice, id_aresta)
+        mst_edges = []
+
+        while min_heap and len(mst_edges) < self.n_vertices - 1:
+            peso, u, id_aresta = heapq.heappop(min_heap)
+
+            if visitado[u]:
+                continue
+
+            visitado[u] = True
+            if id_aresta != -1:
+                mst_weight += peso
+                mst_edges.append(id_aresta)
+
+            for next_peso, next_v, next_id_aresta in adj[u]:
+                if not visitado[next_v]:
+                    heapq.heappush(min_heap, (next_peso, next_v, next_id_aresta))
+
+        if len(mst_edges) == self.n_vertices - 1:
+            return mst_weight
+        else:
+            return -1
 
 
 def main():
