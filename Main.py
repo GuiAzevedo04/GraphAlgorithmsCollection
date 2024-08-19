@@ -4,6 +4,7 @@
 
 import heapq
 
+
 class Graph:
 
     def __init__(self):  # Class constructor
@@ -15,22 +16,25 @@ class Graph:
         self.is_direcionado = True
         self.instrucoes = []
 
-    def read_graph_data(self) -> None: #função para entrada dos dados
+    def read_graph_data(self) -> None:  # função para entrada dos dados
         try:
-            self.n_vertices, self.n_edges = map(int, input("Enter number of vertices and edges: ").split())
-            direcionado_str = input("Is the graph directed (digite 'nao_direcionado' para não direcionado)? ").strip()
+
+            self.instrucoes = list(map(int, input("").split()))
+
+            self.n_vertices, self.n_edges = map(int, input().split())
+            direcionado_str = input().strip()
 
             if direcionado_str == 'nao_direcionado':
                 self.is_direcionado = False
             
-            print("Enter each edge in the format: [index] [vertex1] [vertex2] [weight]")
+            print()
             for x in range(self.n_edges):
                 self.edges.append(list(input().split(' ')))
                 for i in range(len(self.edges[x])):
                     self.edges[x][i] = int(self.edges[x][i])
 
             for x in range(self.n_vertices):
-                    self.vertices.append(x)
+                self.vertices.append(x)
 
         except ValueError as e:
             print(f"Houve um erro na leitura: {e}")
@@ -158,8 +162,8 @@ class Graph:
 
         return True  # se todas as condições forem atendidas, o grafo é euleriano
     
-    def tem_ciclo(self): #função que verifica se há um ciclo no grafo
-        visitados = [False] * self.n_vertices #vetor com os ertices visitados em cada iteração, para garantir a verificação de todos os conjuntos
+    def tem_ciclo(self):  # função que verifica se há um ciclo no grafo
+        visitados = [False] * self.n_vertices  # vetor com os ertices visitados em cada iteração, para garantir a verificação de todos os conjuntos
 
         for i in range(self.n_vertices):
             if not visitados[i]:
@@ -167,29 +171,29 @@ class Graph:
                     return True
         return False
 
-    def dfs_ciclo(self, start, visitados): #dfs que verifica a existência de ciclos
+    def dfs_ciclo(self, start, visitados):  # dfs que verifica a existência de ciclos
         visitados_atual = [False] * self.n_vertices 
         pilha = [start]
-        pais = [-1] * self.n_vertices  #vetor que registra o pai de cada vértice
+        pais = [-1] * self.n_vertices  # vetor que registra o pai de cada vértice
         pais[start] = -1
 
         while pilha:
             v_atual = pilha.pop()
             visitados[v_atual] = True
             visitados_atual[v_atual] = True
-            vetor_ancestrais = self.retorna_ancestrais(v_atual, pais) #retorna os ancestrais do vertice atual
+            vetor_ancestrais = self.retorna_ancestrais(v_atual, pais)  # retorna os ancestrais do vertice atual
 
             for vizinho in range(self.n_vertices):
                 if self.matriz_adjacencia[v_atual][vizinho] != -1:
                     pais[vizinho] = v_atual
                     if vizinho in vetor_ancestrais:
-                        return True # se o vizinho for um dos ancestrais, achamos um ciclo
+                        return True  # se o vizinho for um dos ancestrais, achamos um ciclo
                     if vizinho not in visitados_atual:
                         pilha.append(vizinho)
 
         return False
         
-    def retorna_ancestrais(self, inicial, pais): #função que retorna os ancestrais de uma folha em relação a raiz
+    def retorna_ancestrais(self, inicial, pais):  # função que retorna os ancestrais de uma folha em relação a raiz
         vetor_ancestrais = []
         filho = inicial
         pai = 0
@@ -200,13 +204,13 @@ class Graph:
 
         return vetor_ancestrais 
     
-    def conta_componentes_conexas(self): #retorna quantos componentes conexos tem um grafo não orientado
+    def conta_componentes_conexas(self):  # retorna quantos componentes conexos tem um grafo não orientado
         visitados = [False] * self.n_vertices
         n_componentes = 0
 
         for v in range(self.n_vertices):
             if not visitados[v]:
-                self.dfs_componentes(v, visitados) # faz uma dfs e conta quantas iterações foram necessárias para passar por todos os componentes
+                self.dfs_componentes(v, visitados)  # faz uma dfs e conta quantas iterações foram necessárias para passar por todos os componentes
                 n_componentes += 1
 
         return n_componentes
@@ -224,7 +228,7 @@ class Graph:
                     if self.matriz_adjacencia[v][vizinho] != -1 and not visitados[vizinho]:
                         pilha.append(vizinho)
     
-    def kosaraju(self): #verifica quantos componentes conexos tem um grafo orientado
+    def kosaraju(self):  # verifica quantos componentes conexos tem um grafo orientado
         # Passo 1: Fazer a primeira DFS para calcular a ordem de término dos vértices
         visitados = [False] * self.n_vertices
         ordem_termino = []
@@ -297,7 +301,7 @@ class Graph:
                 if self.matriz_adjacencia[v][vizinho] != -1 and not visitados[vizinho]:
                     pilha.append(vizinho)   
 
-    def conta_pontes(self): #conta as arestas pontes existentes em um grafo
+    def conta_pontes(self):  # conta as arestas pontes existentes em um grafo
         # Inicializações
         self.tempo = 0  # Tempo de descoberta na DFS
         visitados = [False] * self.n_vertices
@@ -335,7 +339,8 @@ class Graph:
                     low[u] = min(low[u], discovery[v])
 
         return bridges
-    def imprime_arvore_profundidade(self): #DFS que imprime o id das arestas utilizadas na busca
+
+    def imprime_arvore_profundidade(self):  # DFS que imprime o id das arestas utilizadas na busca
         visitados = [False] * self.n_vertices
         pilha = [(0, -1)]  # pilha com tuplas (vértice atual, aresta usada para chegar aqui)
         arestas_arvore = []
@@ -345,7 +350,7 @@ class Graph:
             if not visitados[v_atual]:
                 visitados[v_atual] = True
                 if id_aresta != -1:
-                    arestas_arvore.append(id_aresta) #adiciona na lista o id da aretesa utilizada pata chegar em v_atual
+                    arestas_arvore.append(id_aresta)  # adiciona na lista o id da aretesa utilizada pata chegar em v_atual
 
                 vizinhos = []
                 for vizinho in range(self.n_vertices):
@@ -363,7 +368,7 @@ class Graph:
         
         return string_id_aresta
     
-    def imprime_arvore_largura(self): #BFS que imprime o id das arestas utilizadas na busca
+    def imprime_arvore_largura(self):  # BFS que imprime o id das arestas utilizadas na busca
         visitados = [False] * self.n_vertices
         fila = [(0, -1)]  # fila com tuplas (vértice atual, aresta usada para chegar aqui)
         arestas_arvore = []
@@ -373,7 +378,7 @@ class Graph:
             if not visitados[v_atual]:
                 visitados[v_atual] = True
                 if id_aresta != -1:
-                    arestas_arvore.append(id_aresta) #adiciona na lista o id da aretesa utilizada pata chegar em v_atual
+                    arestas_arvore.append(id_aresta)  # adiciona na lista o id da aretesa utilizada pata chegar em v_atual
 
                 vizinhos = []
                 for vizinho in range(self.n_vertices):
@@ -391,11 +396,10 @@ class Graph:
         
         return string_id_aresta
 
-
-    def get_edge_id(self, v1, v2): #pega o id de aresta através do par de vertices
+    def get_edge_id(self, v1, v2):  # pega o id de aresta através do par de vertices
         if self.is_direcionado:
             for edge in self.edges:
-                if(edge[1] == v1 and edge[2] == v2):
+                if edge[1] == v1 and edge[2] == v2:
                     return edge[0]
         else:
             for edge in self.edges:
