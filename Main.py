@@ -37,10 +37,6 @@ class Graph:
             for x in range(self.n_vertices):
                 self.vertices.append(x)
 
-            # Cria as matrizes de adjacência e simétrica
-            self.matriz_adjacencia = self.cria_matriz_adjacencia(self.n_vertices, self.edges)
-            self.matriz_simetrica = self.cria_matriz_simetrica()
-
         except ValueError as e:
             print(f"Houve um erro na leitura: {e}")
 
