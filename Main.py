@@ -37,6 +37,10 @@ class Graph:
             for x in range(self.n_vertices):
                 self.vertices.append(x)
 
+            # Cria as matrizes de adjacência e simétrica
+            self.matriz_adjacencia = self.cria_matriz_adjacencia(self.n_vertices, self.edges)
+            self.matriz_simetrica = self.cria_matriz_simetrica()
+
         except ValueError as e:
             print(f"Houve um erro na leitura: {e}")
 
@@ -500,7 +504,58 @@ class Graph:
 
         start_vertex, end_vertex = 0, self.n_vertices - 1
         distances = self.dijkstra(start_vertex)
-        return distances[end_vertex] if distances[end_vertex] != float('infinity') else -1       
+        return distances[end_vertex] if distances[end_vertex] != float('infinity') else -1
+    
+    def ford_fulkerson(self) -> int:
+        # Inicializa o fluxo máximo
+        max_flow = 0
+
+        # Cria a matriz de capacidade
+        capacity = [[0] * self.n_vertices for _ in range(self.n_vertices)]
+        for edge in self.edges:
+            u, v, capacity_value = edge[1], edge[2], edge[3]
+            capacity[u][v] = capacity_value
+
+        # Função auxiliar para encontrar um caminho aumentante usando BFS
+        def bfs(source, sink, parent):
+            visited = [False] * self.n_vertices
+            queue = [source]
+            visited[source] = True
+            while queue:
+                u = queue.pop(0)
+                for v in range(self.n_vertices):
+                    if not visited[v] and capacity[u][v] > 0:
+                        parent[v] = u
+                        visited[v] = True
+                        if v == sink:
+                            return True
+                        queue.append(v)
+            return False
+
+        # Função para encontrar o fluxo mínimo no caminho encontrado
+        def find_min_flow(source, sink, parent):
+            path_flow = float('Inf')
+            s = sink
+            while s != source:
+                path_flow = min(path_flow, capacity[parent[s]][s])
+                s = parent[s]
+            return path_flow
+
+        # Função principal do algoritmo de Ford-Fulkerson
+        source, sink = 0, self.n_vertices - 1
+        parent = [-1] * self.n_vertices
+
+        while bfs(source, sink, parent):
+            path_flow = find_min_flow(source, sink, parent)
+            max_flow += path_flow
+            v = sink
+            while v != source:
+                u = parent[v]
+                capacity[u][v] -= path_flow
+                capacity[v][u] += path_flow
+                v = parent[v]
+
+        return max_flow   
 
 def main():
 
