@@ -16,6 +16,7 @@ class Graph:
         self.n_edges = 0
         self.is_direcionado = True
         self.instrucoes = []
+        self.lista_adjacencia = []
 
     def read_graph_data(self) -> None:  # procedimento para entrada dos dados
         try:
@@ -43,6 +44,16 @@ class Graph:
 
         except ValueError as e:
             print(f"Houve um erro na leitura: {e}")
+
+    def cria_lista_adjacencia(self) -> list:
+        lista_adjacencia = [[] for _ in range(self.n_vertices)]
+
+        for edge in self.edges:
+            _, u, v, _ = edge
+            lista_adjacencia[u].append(v)
+            lista_adjacencia[v].append(u)
+
+        return lista_adjacencia
 
     def cria_matriz_adjacencia(self, n_vertices, arestas) -> list:
         # Inicializa a matriz de adjacência com -1
@@ -245,6 +256,41 @@ class Graph:
                 scc_count += 1  # Cada DFS completa encontra uma componente fortemente conexa
 
         return scc_count
+
+    def lista_articulacoes(self, lista_adjacencia, n_vertices) -> list:
+        baixos = [-1] * n_vertices
+        visitados = [False] * n_vertices
+        pontos_de_articulacao = set()
+        pais = [None] * n_vertices
+        tempo_descoberta = [-1] * n_vertices
+        tempo = 0
+
+        for i in range(n_vertices):
+            if not visitados[i]:
+                self.dfs_articulacoes(i, pais, visitados, tempo_descoberta, baixos, pontos_de_articulacao, tempo, lista_adjacencia)
+
+        return list(pontos_de_articulacao)
+
+    def dfs_articulacoes(self, u, pais, visitados, tempo_descoberta, baixos, pontos_de_articulacao, tempo, lista_adjacencia):
+
+        tempo += 1
+        tempo_descoberta[u] = baixos[u] = tempo
+        visitados[u] = True
+        filhos = 0
+
+        for v in lista_adjacencia[u]:
+            if not visitados[v]:
+                filhos += 1
+                pais[v] = u
+                self.dfs_articulacoes(v, pais, visitados, tempo_descoberta, baixos, pontos_de_articulacao, tempo, lista_adjacencia)
+                baixos[u] = min(baixos[u], baixos[v])
+
+                if pais[u] is None and filhos > 1:
+                    pontos_de_articulacao.add(u)
+                if pais[u] is not None and baixos[v] >= tempo_descoberta[u]:
+                    pontos_de_articulacao.add(u)
+            elif v != pais[u]:
+                baixos[u] = min(baixos[u], tempo_descoberta[v])
 
     def dfs_ordem_termino(self, start, visitados, ordem_termino):
         pilha = [start]
@@ -495,17 +541,51 @@ class Graph:
 
         return distances
 
+    def fecho_transitivo_vertice(self, matriz_adjacencia):
+        vertices = len(matriz_adjacencia)
+        visitados = []
+
+        def dfs(v):
+            for i in range(vertices):
+                if matriz_adjacencia[v][i] == 1 and i not in visitados:
+                    visitados.append(i)
+                    dfs(i)
+
+        dfs(0)
+
+        return visitados
+
     def shortest_path(self):
         if self.is_direcionado:
             return -1
-        
+
         if not self.has_equal_weight():
             return -1
 
         start_vertex, end_vertex = 0, self.n_vertices - 1
         distances = self.dijkstra(start_vertex)
         return distances[end_vertex] if distances[end_vertex] != float('infinity') else -1
-    
+
+    def ordenacao_topologica(self, matriz_adjacencia) -> list:
+        vertices = len(matriz_adjacencia)
+        visitado = [False] * vertices
+        pilha = []
+
+        def dfs(v):
+            visitado[v] = True
+            for i in range(vertices):
+                if matriz_adjacencia[v][i] == 1 and not visitado[i]:
+                    dfs(i)
+            pilha.append(v)
+
+        # Executa DFS em todos os vértices para garantir que todos sejam visitados
+        for v in range(vertices):
+            if not visitado[v]:
+                dfs(v)
+
+        # Retorna a pilha invertida (a ordem topológica)
+        return pilha[::-1]
+
     def ford_fulkerson(self) -> int:
         # Inicializa o fluxo máximo
         max_flow = 0
@@ -569,15 +649,12 @@ def main():
         match meu_grafo.instrucoes[0]:
             case 0:
                 # print(int(meu_grafo.verifica_conexidade()))
-                print("depende da funcao dfs_vertices_percorridos")
+                print("depende da funcao dfs_vertices_percorridos que tá quebrada")
             case 1:
-                if meu_grafo.is_direcionado:
-                    print("-1")
-                else:
-                    print(int(meu_grafo.verifica_bipartido()))
+                print(int(meu_grafo.verifica_bipartido()))
             case 2:
                 # print(int(meu_grafo.verifica_euleriano()))
-                print("depende da funcao dfs_vertices_percorridos")
+                print("depende da funcao dfs_vertices_percorridos que tá quebrada")
             case 3:
                 print(int(meu_grafo.tem_ciclo()))
             case 4:
@@ -591,23 +668,30 @@ def main():
                 else:
                     print("-1")
             case 6:
-                print("ToDo instrucao 6")
+                if not meu_grafo.is_direcionado:
+                    print(meu_grafo.lista_articulacoes(meu_grafo.lista_adjacencia, meu_grafo.n_vertices))
+                else:
+                    print("-1")
             case 7:
-                print("ToDo instrucao 7")
+                if not meu_grafo.is_direcionado:
+                    print(meu_grafo.conta_pontes())
+                else:
+                    print("-1")
             case 8:
-                print("ToDo instrucao 8")
+                print(meu_grafo.imprime_arvore_profundidade())
             case 9:
-                print("ToDo instrucao 9")
+                print(meu_grafo.imprime_arvore_largura())
             case 10:
-                print("ToDo instrucao 10")
+                print("Nao sei qual funcao faz isso, quem souber bota aq")
             case 11:
-                print("ToDo instrucao 11")
+                print(meu_grafo.ordenacao_topologica(meu_grafo.matriz_adjacencia))
             case 12:
-                print("ToDo instrucao 12")
+                print(meu_grafo.shortest_path())
             case 13:
                 print(meu_grafo.ford_fulkerson())
             case 14:
-                print("ToDo instrucao 14")
+                if meu_grafo.is_direcionado:
+                    print(meu_grafo.fecho_transitivo_vertice(meu_grafo.matriz_adjacencia))
             case _:
                 print("Invalid Command")
 

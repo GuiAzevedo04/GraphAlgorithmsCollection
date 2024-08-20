@@ -23,15 +23,16 @@ nao_direcionado
     3 Verificar se um grafo possui ciclo.
     4 Calcular a quantidade de componentes conexas em um grafo não-orientado.
     5 Calcular a quantidade de componentes fortemente conexas em um grafo orientado.
-
-    13 Valor do fluxo máximo para grafos direcionados. 0 é a origem; n-1 é o destino.
-
-
     6 Imprimir os vértices de articulação de um grafo não-orientado (priorizar a ordem lexicográfica dos vértices).
     7 Calcular quantas arestas ponte possui um grafo não-orientado.
     8 Imprimir a árvore em profundidade (priorizando a ordem lexicográfica dos vértices; 0 é a origem). Você deve imprimir o identificador das arestas. Caso o grafo seja desconexo, considere apenas a árvore com a raíz 0.
     9 Árvore de largura (priorizando a ordem lexicográfica dos vértices; 0 é a origem). Você deve imprimir o identificador das arestas. Caso o grafo seja desconexo, considere apenas a árvore com a raíz 0.
-    10 Calcular o valor final de uma árvore geradora mínima (para grafos não-orientados).
-    11 Imprimir a ordem os vértices em uma ordenação topológica. Esta função não fica disponível em grafos não direcionado. Deve-se priorizar a ordem lexicográfica dos vértices.
+
+
     12 Valor do caminho mínimo entre dois vértices (para grafos não-orientados com pelo menos um peso diferente nas arestas).  0 é a origem; n-1 é o destino.
+    13 Valor do fluxo máximo para grafos direcionados. 0 é a origem; n-1 é o destino.
     14 Fecho transitivo para grafos direcionados.  Deve-se priorizar a ordem lexicográfica dos vértices; 0 é o vértice escolhido.
+
+    10 Calcular o valor final de uma árvore geradora mínima (para grafos não-orientados).
+FAZER   11 Imprimir a ordem os vértices em uma ordenação topológica. Esta função não fica disponível em grafos não direcionado. Deve-se priorizar a ordem lexicográfica dos vértices.
+
