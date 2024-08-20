@@ -496,7 +496,7 @@ class Graph:
         return distances
 
     def shortest_path(self):
-        if self.is_direcionado == True:
+        if self.is_direcionado:
             return -1
         
         if not self.has_equal_weight():
@@ -557,6 +557,7 @@ class Graph:
 
         return max_flow   
 
+
 def main():
 
     close_program = False
@@ -570,16 +571,25 @@ def main():
                 # print(int(meu_grafo.verifica_conexidade()))
                 print("depende da funcao dfs_vertices_percorridos")
             case 1:
-                print(int(meu_grafo.verifica_bipartido()))
+                if meu_grafo.is_direcionado:
+                    print("-1")
+                else:
+                    print(int(meu_grafo.verifica_bipartido()))
             case 2:
                 # print(int(meu_grafo.verifica_euleriano()))
                 print("depende da funcao dfs_vertices_percorridos")
             case 3:
                 print(int(meu_grafo.tem_ciclo()))
             case 4:
-                print(meu_grafo.conta_componentes_conexas())
+                if not meu_grafo.is_direcionado:
+                    print(meu_grafo.conta_componentes_conexas())
+                else:
+                    print("-1")
             case 5:
-                print("ToDo instrucao 5")
+                if meu_grafo.is_direcionado:
+                    print(meu_grafo.kosaraju())
+                else:
+                    print("-1")
             case 6:
                 print("ToDo instrucao 6")
             case 7:
@@ -595,7 +605,7 @@ def main():
             case 12:
                 print("ToDo instrucao 12")
             case 13:
-                print("ToDo instrucao 13")
+                print(meu_grafo.ford_fulkerson())
             case 14:
                 print("ToDo instrucao 14")
             case _:
