@@ -41,6 +41,7 @@ class Graph:
             # Cria as matrizes de adjacência e simétrica
             self.matriz_adjacencia = self.cria_matriz_adjacencia(self.n_vertices, self.edges)
             self.matriz_simetrica = self.cria_matriz_simetrica()
+            self.lista_adjacencia = self.cria_lista_adjacencia()
 
         except ValueError as e:
             print(f"Houve um erro na leitura: {e}")
@@ -692,6 +693,8 @@ def main():
             case 14:
                 if meu_grafo.is_direcionado:
                     print(meu_grafo.fecho_transitivo_vertice(meu_grafo.matriz_adjacencia))
+                else:
+                    print("-1")
             case _:
                 print("Invalid Command")
 
