@@ -548,17 +548,18 @@ class Graph:
 
     def fecho_transitivo_vertice(self, matriz_adjacencia):
         vertices = len(matriz_adjacencia)
-        visitados = []
+        visitados = set()  # Usar um conjunto para garantir que não há duplicatas
 
         def dfs(v):
             for i in range(vertices):
                 if matriz_adjacencia[v][i] == 1 and i not in visitados:
-                    visitados.append(i)
+                    visitados.add(i)
                     dfs(i)
 
+        # Executa DFS a partir do vértice 0
         dfs(0)
 
-        return visitados
+        return sorted(list(visitados))
 
     def shortest_path(self):
         if self.has_equal_weight():
