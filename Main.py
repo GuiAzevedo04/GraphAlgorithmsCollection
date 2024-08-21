@@ -1,5 +1,5 @@
 # Trabalho prático da disciplina GCC218 - Algoritmos em Grafos
-# Alunos: Guilherme Luiz de Azevedo, Henrique Assis Moreira, Mateus Piassi de Carvalho
+# Alunos: Guilherme Luiz de Azevedo, Henrique Assis Moreira, Matheus Piassi de Carvalho
 # Universidade Federal de Lavras - UFLA, 2024/01
 import copy
 import heapq
@@ -21,7 +21,7 @@ class Graph:
     def read_graph_data(self) -> None:  # procedimento para entrada dos dados
         try:
 
-            # Lê as informações do Grafo
+            #lê as informações do Grafo
             self.instrucoes = list(map(int, input().split()))
 
             self.n_vertices, self.n_edges = map(int, input().split())
@@ -46,13 +46,14 @@ class Graph:
         except ValueError as e:
             print(f"Houve um erro na leitura: {e}")
 
-    def cria_lista_adjacencia(self) -> list:
+    def cria_lista_adjacencia(self) -> list: #função que cria a lista de adjacência do grafo
         lista_adjacencia = [[] for _ in range(self.n_vertices)]
 
         for edge in self.edges:
             _, u, v, _ = edge
             lista_adjacencia[u].append(v)
-            lista_adjacencia[v].append(u)
+            if not self.is_direcionado:
+                lista_adjacencia[v].append(u)
 
         return lista_adjacencia
 
@@ -70,7 +71,7 @@ class Graph:
     def cria_matriz_simetrica(self) -> list:
         matriz_simetrica = copy.deepcopy(self.matriz_adjacencia)
         for i in range(self.n_vertices):
-            for j in range(i + 1, self.n_vertices):  # Percorre apenas a metade superior da matriz
+            for j in range(i + 1, self.n_vertices):  #percorre apenas a metade superior da matriz
                 if matriz_simetrica[i][j] != -1 and matriz_simetrica[j][i] == -1:
                     matriz_simetrica[j][i] = matriz_simetrica[i][j]
                 elif matriz_simetrica[j][i] != -1 and matriz_simetrica[i][j] == -1:
@@ -78,7 +79,7 @@ class Graph:
 
         return matriz_simetrica
 
-    def dfs_vertices_percorridos(self, v_inicial, matrix) -> list[int]:  # DFS que retorna os vértices percorridos
+    def dfs_vertices_percorridos(self, v_inicial, matrix) -> list[int]:  #DFS que retorna os vértices percorridos
         visitados = set()
         pilha = [v_inicial]
 
@@ -93,54 +94,53 @@ class Graph:
         return list(visitados)
 
     def verifica_conexidade(self) -> bool:
-        if not self.is_direcionado:  # se o grafo não for direcionado, verifica se normalmente
+        if not self.is_direcionado:  #se o grafo não for direcionado, verifica se normalmente
             matrix_temp = self.matriz_adjacencia
-        else:  # se for direcionado, verifica-se sua conexidade fraca ignorando sua conexidade
+        else:  #se for direcionado, verifica-se sua conexidade fraca ignorando sua conexidade
             matrix_temp = self.matriz_simetrica
-        # se o tamano do vetor retornado pela DFS não for igual ao número de vértices o grafo não é conexo
+        #se o tamano do vetor retornado pela DFS não for igual ao número de vértices o grafo não é conexo
         n_visitados = len(self.dfs_vertices_percorridos(self.vertices[0], matrix_temp))
         return n_visitados == self.n_vertices
 
-    def verifica_bipartido(self) -> bool:  # verifica se o grafo é bipartido, usando o metodo de coloração
-        color = [-1] * self.n_vertices  # Inicializar um vetor de cores onde -1 indica que o vértice não foi colorido
+    def verifica_bipartido(self) -> bool:  #verifica se o grafo é bipartido, usando o metodo de coloração
+        color = [-1] * self.n_vertices  #inicializar um vetor de cores onde -1 indica que o vértice não foi colorido
 
         for i in range(self.n_vertices):
-            if color[i] == -1:  # Se o vértice não foi colorido, iniciar BFS
+            if color[i] == -1:  #se o vértice não foi colorido, iniciar BFS
                 if not self.verifica_componente_bipartido(i, color):
                     return False
 
         return True
 
-    # a partir de um vertice inicial, verifica se o componente é bipartido
     def verifica_componente_bipartido(self, start, color) -> bool:
         if not self.is_direcionado:
-            # usar BFS para colorir os vértices
+            #usar BFS para colorir os vértices
             queue = [start]
-            color[start] = 0  # iniciar com a primeira cor
+            color[start] = 0  #iniciar com a primeira cor
 
             while queue:
                 v = queue.pop(0)
 
                 for neighbor in range(self.n_vertices):
-                    if self.matriz_adjacencia[v][neighbor] != -1:  # Verificar adjacência
+                    if self.matriz_adjacencia[v][neighbor] != -1:  #verificar adjacência
                         if color[neighbor] == -1:
-                            # colorir o vizinho com a cor oposta
+                            #colorir o vizinho com a cor oposta
                             color[neighbor] = 1 - color[v]
                             queue.append(neighbor)
                         elif color[neighbor] == color[v]:
-                            # se um vizinho tem a mesma cor, o grafo não é bipartido
+                            #se um vizinho tem a mesma cor, o grafo não é bipartido
                             return False
 
             return True
         else:
             return False
 
-    def verifica_euleriano(self) -> bool:
+    def verifica_euleriano(self) -> bool: #verifica se o grafo é euleriano
         if not self.verifica_conexidade():
-            return False  # o grafo não é conexo, então não é euleriano
+            return False  #o grafo não é conexo, então não é euleriano
 
         if self.is_direcionado:
-            # para grafos direcionados, verificar se todos os vértices têm grau de entrada igual ao grau de saída
+            #para grafos direcionados, verificar se todos os vértices têm grau de entrada igual ao grau de saída
             grau_entrada = [0] * self.n_vertices
             grau_saida = [0] * self.n_vertices
 
@@ -154,7 +154,7 @@ class Graph:
                     return False
 
         else:
-            # para grafos não direcionados, verificar se todos os vértices têm grau par
+            #para grafos não direcionados, verificar se todos os vértices têm grau par
             grau = [0] * self.n_vertices
 
             for edge in self.edges:
@@ -166,76 +166,52 @@ class Graph:
                 if g % 2 != 0:
                     return False
 
-        return True  # se todas as condições forem atendidas, o grafo é euleriano
+        return True  #se todas as condições forem atendidas, o grafo é euleriano
 
-    def tem_ciclo(self) -> bool:  # função que verifica se há um ciclo no grafo
-        visitados = [False] * self.n_vertices  # vetor com os ertices visitados em cada iteração, para garantir a verificação de todos os conjuntos
+    def tem_ciclo(self) -> bool:  #função que verifica se há um ciclo no grafo
+        visitados = [False] * self.n_vertices  #vetor com os vértices visitados
 
         for i in range(self.n_vertices):
-            if not visitados[i]:
-                if self.dfs_ciclo(i, visitados):
+            if not visitados[i]:  #verifica se o componente conectado já foi visitado
+                if self.dfs_ciclo(i, visitados, -1):  #passa -1 como o "pai" inicial
                     return True
         return False
 
-    def dfs_ciclo(self, start, visitados) -> bool:  # dfs que verifica a existência de ciclos
-        visitados_atual = [False] * self.n_vertices
-        pilha = [start]
-        pais = [-1] * self.n_vertices  # vetor que registra o pai de cada vértice
-        pais[start] = -1
+    def dfs_ciclo(self, v_atual, visitados, pai) -> bool:  #DFS que verifica a existência de ciclos
+        visitados[v_atual] = True  #marca o vértice atual como visitado
 
-        while pilha:
-            v_atual = pilha.pop()
-            visitados[v_atual] = True
-            visitados_atual[v_atual] = True
-            vetor_ancestrais = self.retorna_ancestrais(v_atual, pais)  # retorna os ancestrais do vertice atual
-
-            for vizinho in range(self.n_vertices):
-                if self.matriz_adjacencia[v_atual][vizinho] != -1:
-                    pais[vizinho] = v_atual
-                    if vizinho in vetor_ancestrais:
-                        return True  # se o vizinho for um dos ancestrais, achamos um ciclo
-                    if vizinho not in visitados_atual:
-                        pilha.append(vizinho)
+        #itera sobre todos os vizinhos do vértice atual
+        for vizinho in range(self.n_vertices):
+            if self.matriz_adjacencia[v_atual][vizinho] != -1:  #verifica se existe uma aresta
+                if not visitados[vizinho]:  #se o vizinho não foi visitado, continue a DFS
+                    if self.dfs_ciclo(vizinho, visitados, v_atual):
+                        return True
+                elif vizinho != pai:  #se o vizinho foi visitado e não é o pai, encontramos um ciclo
+                    return True
 
         return False
 
-    def retorna_ancestrais(self, inicial, pais) -> list:  # retorna os ancestrais de uma folha em relação a raiz
-        vetor_ancestrais = []
-        filho = inicial
-        pai = 0
-        while pai != -1:
-            pai = pais[filho]
-            vetor_ancestrais.append(pai)
-            filho = pai
+    def conta_componentes_conexas(self) -> int:  #retorna quantos componentes conexos tem um grafo não orientado   
+        componentes = []
+        visitados = []
 
-        return vetor_ancestrais
+        def dfs_componente(v, componente_atual):
+            visitados.append(v)
+            componente_atual.append(v)  #adiciona o vértice atual ao componente
+            for vizinho in self.lista_adjacencia[v]:
+                if vizinho not in visitados:
+                    dfs_componente(vizinho, componente_atual)
 
-    def conta_componentes_conexas(self) -> int:  # retorna quantos componentes conexos tem um grafo não orientado
-        visitados = [False] * self.n_vertices
-        n_componentes = 0
+        for vertice in self.vertices:
+            if vertice not in visitados:
+                componente_atual = []
+                dfs_componente(vertice, componente_atual)
+                componentes.append(sorted(componente_atual))  #ordena para garantir a ordem correta
 
-        for v in range(self.n_vertices):
-            if not visitados[v]:
-                self.dfs_componentes(v, visitados)  # faz uma dfs e conta quantas iterações foram necessárias para passar por todos os componentes
-                n_componentes += 1
+        return len(componentes)  #retorna o número de componentes conexas
 
-        return n_componentes
-
-    def dfs_componentes(self, start, visitados):
-        pilha = [start]
-
-        while pilha:
-            v = pilha.pop()
-            if not visitados[v]:
-                visitados[v] = True
-
-                # Adiciona todos os vizinhos não visitados à pilha
-                for vizinho in range(self.n_vertices):
-                    if self.matriz_adjacencia[v][vizinho] != -1 and not visitados[vizinho]:
-                        pilha.append(vizinho)
-
-    def kosaraju(self) -> int:  # verifica quantos componentes conexos tem um grafo orientado
-        # Passo 1: Fazer a primeira DFS para calcular a ordem de término dos vértices
+    def kosaraju(self) -> int:  #verifica quantos componentes conexos tem um grafo orientado
+        #primeiro, fazemos a primeira DFS para calcular a ordem de término dos vértices
         visitados = [False] * self.n_vertices
         ordem_termino = []
 
@@ -243,22 +219,57 @@ class Graph:
             if not visitados[v]:
                 self.dfs_ordem_termino(v, visitados, ordem_termino)
 
-        # Passo 2: Transpor o grafo
+        #em seguida transpomos o grafo, invertendo suas arestas
         grafo_transposto = self.transpor_grafo()
 
-        # Passo 3: Fazer DFS no grafo transposto na ordem inversa da ordem de término
+        #por fim, fazemos a DFS no grafo transposto na ordem inversa da ordem de término
         visitados = [False] * self.n_vertices
-        scc_count = 0
+        n_componentes_conexas = 0
 
         while ordem_termino:
             v = ordem_termino.pop()
             if not visitados[v]:
                 grafo_transposto.dfs_visit(v, visitados)
-                scc_count += 1  # Cada DFS completa encontra uma componente fortemente conexa
+                n_componentes_conexas += 1  #cada DFS completa encontra uma componente fortemente conexa
 
-        return scc_count
+        return n_componentes_conexas
 
-    def lista_articulacoes(self, lista_adjacencia, n_vertices) -> list[str]:
+    def dfs_ordem_termino(self, start, visitados, ordem_termino): #calcula a ordem de termino do grafo
+        pilha = [start]
+        visitados_atual = [False] * self.n_vertices  
+
+        while pilha:
+            v = pilha[-1]  
+            if not visitados[v]:
+                visitados[v] = True
+                visitados_atual[v] = False  
+
+            for vizinho in range(self.n_vertices):
+                if self.matriz_adjacencia[v][vizinho] != -1 and not visitados[vizinho]:
+                    pilha.append(vizinho)
+                    break
+            else:
+                # Se todos os vizinhos foram visitados ou não há mais vizinhos
+                if not visitados_atual[v]:
+                    ordem_termino.append(v)
+                    visitados_atual[v] = True
+                pilha.pop()
+
+    def transpor_grafo(self):  #transpõe o grafo, invertendo as arestas
+        grafo_transposto = Graph()
+        grafo_transposto.n_vertices = self.n_vertices
+        grafo_transposto.is_direcionado = True
+
+        grafo_transposto.matriz_adjacencia = [[-1 for _ in range(self.n_vertices)] for _ in range(self.n_vertices)]
+
+        for v1 in range(self.n_vertices):
+            for v2 in range(self.n_vertices):
+                if self.matriz_adjacencia[v1][v2] != -1:
+                    grafo_transposto.matriz_adjacencia[v2][v1] = self.matriz_adjacencia[v1][v2]
+
+        return grafo_transposto
+    
+    def lista_articulacoes(self, lista_adjacencia, n_vertices) -> list[str]: #lista os vertices de articulação
         baixos = [-1] * n_vertices
         visitados = [False] * n_vertices
         pontos_de_articulacao = set()
@@ -297,42 +308,6 @@ class Graph:
 
         return lista_de_retorno
 
-    def dfs_ordem_termino(self, start, visitados, ordem_termino):
-        pilha = [start]
-        visitados_locais = [False] * self.n_vertices  # Para controlar os nós já processados localmente
-
-        while pilha:
-            v = pilha[-1]  # Pega o vértice do topo da pilha
-            if not visitados[v]:
-                visitados[v] = True
-                visitados_locais[v] = False  # Marca que ainda não foi processado localmente
-
-            # Itera sobre os vizinhos
-            for vizinho in range(self.n_vertices):
-                if self.matriz_adjacencia[v][vizinho] != -1 and not visitados[vizinho]:
-                    pilha.append(vizinho)
-                    break
-            else:
-                # Se todos os vizinhos foram visitados ou não há mais vizinhos
-                if not visitados_locais[v]:
-                    ordem_termino.append(v)
-                    visitados_locais[v] = True
-                pilha.pop()
-
-    def transpor_grafo(self):  # Transpõe o grafo
-        grafo_transposto = Graph()
-        grafo_transposto.n_vertices = self.n_vertices
-        grafo_transposto.is_direcionado = True
-
-        grafo_transposto.matriz_adjacencia = [[-1 for _ in range(self.n_vertices)] for _ in range(self.n_vertices)]
-
-        for v1 in range(self.n_vertices):
-            for v2 in range(self.n_vertices):
-                if self.matriz_adjacencia[v1][v2] != -1:
-                    grafo_transposto.matriz_adjacencia[v2][v1] = self.matriz_adjacencia[v1][v2]
-
-        return grafo_transposto
-
     def dfs_visit(self, start, visitados):
         pilha = [start]
 
@@ -341,8 +316,8 @@ class Graph:
             if not visitados[v]:
                 visitados[v] = True
 
-            # Adiciona os vizinhos não visitados na pilha
-            for vizinho in range(self.n_vertices - 1, -1, -1):  # Ordem inversa para simular a chamada recursiva
+            #adiciona os vizinhos não visitados na pilha
+            for vizinho in range(self.n_vertices - 1, -1, -1):  #ordem inversa para simular a chamada recursiva
                 if self.matriz_adjacencia[v][vizinho] != -1 and not visitados[vizinho]:
                     pilha.append(vizinho)
 
@@ -385,61 +360,61 @@ class Graph:
 
         return bridges
 
-    def imprime_arvore_profundidade(self) -> str:  # DFS que imprime o id das arestas utilizadas na busca
-        visitados = [False] * self.n_vertices
-        pilha = [(0, -1)]  # pilha com tuplas (vértice atual, aresta usada para chegar aqui)
-        arestas_arvore = []
+    def imprime_arvore_profundidade(self) -> str: #função que imprime a arvore de busca em profundidade
+        def dfs(v):
+            visitados = [False] * self.n_vertices
+            id_arestas_usadas = []
+            pilha = [(v, -1)]  #pilha com tuplas (vértice, pai)
 
-        while pilha:
-            v_atual, id_aresta = pilha.pop()
-            if not visitados[v_atual]:
-                visitados[v_atual] = True
-                if id_aresta != -1:
-                    arestas_arvore.append(id_aresta)  # adiciona na lista o id da aretesa utilizada pata chegar em v_atual
+            while pilha:
+                atual, pai_atual = pilha.pop()  # Remove o vértice do topo da pilha
+                if visitados[atual] == False:
+                    visitados[atual] = True
+                    if pai_atual != -1:
+                        # Adiciona o ID da aresta se o vértice atual não for o vértice inicial
+                        id_arestas_usadas.append(self.get_edge_id(pai_atual, atual))
 
-                vizinhos = []
-                for vizinho in range(self.n_vertices):
-                    if self.matriz_adjacencia[v_atual][vizinho] != -1 and not visitados[vizinho]:
-                        id_aresta_vizinho = self.get_edge_id(v_atual, vizinho)
-                        vizinhos.append((vizinho, id_aresta_vizinho))
+                    # Itera sobre todos os vizinhos do vértice atual, ordenados por ID da aresta
+                    for vizinho in reversed(self.lista_adjacencia[atual]):
+                        if not visitados[vizinho]:
+                            pilha.append((vizinho, atual))  # Adiciona o vizinho à pilha
 
-                vizinhos.sort()  # Ordena os vizinhos em ordem lexicográfica
-                pilha.extend(vizinhos[::-1])  # Adiciona os vizinhos à pilha na ordem lexicográfica
+            return id_arestas_usadas
 
-        # Imprimir os identificadores das arestas da árvore
-        string_id_aresta = ''
-        for id_aresta in sorted(arestas_arvore):
-            string_id_aresta += str(id_aresta) + '  '
+        # Executa a DFS a partir do vértice 0
+        ids_aresta = dfs(0)
 
-        return string_id_aresta
+        # Ordena os IDs de arestas e converte a lista para uma string com IDs separados por espaço
+        ids_aresta_string = ' '.join(map(str, ids_aresta))
+        return ids_aresta_string
 
     def imprime_arvore_largura(self) -> str:  # BFS que imprime o id das arestas utilizadas na busca
-        visitados = [False] * self.n_vertices
-        fila = [(0, -1)]  # fila com tuplas (vértice atual, aresta usada para chegar aqui)
-        arestas_arvore = []
+        def bfs(v, grafo):
+            visitados = [False] * grafo.n_vertices
+            id_arestas_usadas = []
+            fila = [v]  # Usamos uma lista simples para simular a fila
+            visitados[v] = True
 
-        while fila:
-            v_atual, id_aresta = fila.pop(0)
-            if not visitados[v_atual]:
-                visitados[v_atual] = True
-                if id_aresta != -1:
-                    arestas_arvore.append(id_aresta)  # adiciona na lista o id da aretesa utilizada pata chegar em v_atual
+            while fila:
+                atual = fila.pop(0)  # Remove o primeiro elemento da fila
+                for vizinho in sorted(grafo.lista_adjacencia[atual]):  # Ordena os vizinhos em ordem lexicográfica
+                    id_aresta = grafo.get_edge_id(atual, vizinho)  # Obtém o id da aresta
+                    # Adiciona os vizinhos à fila
+                    if not visitados[vizinho]:
+                        #print(f"{atual} e {vizinho}")
+                        visitados[vizinho] = True
+                        fila.append(vizinho)
+                        #print('->', id_aresta)
+                        id_arestas_usadas.append(id_aresta)
 
-                vizinhos = []
-                for vizinho in range(self.n_vertices):
-                    if self.matriz_adjacencia[v_atual][vizinho] != -1 and not visitados[vizinho]:
-                        id_aresta_vizinho = self.get_edge_id(v_atual, vizinho)
-                        vizinhos.append((vizinho, id_aresta_vizinho))
+            return id_arestas_usadas
 
-                vizinhos.sort()  # Ordena os vizinhos em ordem lexicográfica
-                fila.extend(vizinhos[::-1])  # Adiciona os vizinhos à pilha na ordem lexicográfica
+        # Executa o BFS a partir do vértice 0
+        ids_aresta = bfs(0, self)
 
-        # Imprimir os identificadores das arestas da árvore
-        string_id_aresta = ''
-        for id_aresta in sorted(arestas_arvore):
-            string_id_aresta += str(id_aresta) + '  '
-
-        return string_id_aresta
+        # Converte a lista para uma string onde os IDs estão separados por espaço
+        ids_aresta_string = ' '.join(map(str, ids_aresta))
+        return ids_aresta_string
 
     def get_edge_id(self, v1, v2):  # pega o id de aresta através do par de vertices
         if self.is_direcionado:
@@ -453,7 +428,7 @@ class Graph:
 
         return -1
 
-    def prim(self) -> int:
+    def prim(self) -> int: #executa o algoritimo de prim para encontar a AVL, e retorna seu peso
         if not self.edges:
             return -1
 
@@ -516,7 +491,7 @@ class Graph:
         return True  # Se todas as arestas têm o mesmo peso, retorna True
 
     def dijkstra(self, start_vertex):
-        # Inicializa as distâncias com infinito
+        #inicializa as distâncias com infinito
         distances = {v: float('infinity') for v in range(self.n_vertices)}
         distances[start_vertex] = 0
         priority_queue = [(0, start_vertex)]
@@ -546,20 +521,26 @@ class Graph:
 
         return distances
 
-    def fecho_transitivo_vertice(self, matriz_adjacencia):
-        vertices = len(matriz_adjacencia)
-        visitados = set()  # Usar um conjunto para garantir que não há duplicatas
+    def fecho_transitivo(self) -> list:
+        vertice_inicial = 0
+        visitados = [False] * self.n_vertices
+        fila = [vertice_inicial]  #usamos uma lista simples para simular a fila
 
-        def dfs(v):
-            for i in range(vertices):
-                if matriz_adjacencia[v][i] == 1 and i not in visitados:
-                    visitados.add(i)
-                    dfs(i)
+        while fila:
+            u = fila.pop(0)  #remove o primeiro elemento da fila
+            if not visitados[u]:
+                visitados[u] = True
+                for v in sorted(self.lista_adjacencia[u]):  #ordena os vizinhos em ordem lexicográfica
+                    if not visitados[v]:
+                        fila.append(v)
 
-        # Executa DFS a partir do vértice 0
-        dfs(0)
-
-        return sorted(list(visitados))
+        #excluir o próprio vértice inicial do fecho transitivo
+        resultado = []
+        for v in range(self.n_vertices):
+            if visitados[v] and v != vertice_inicial:
+                resultado.append(v)  
+        string = ' '.join(map(str, resultado))
+        return string
 
     def shortest_path(self):
         if self.has_equal_weight():
@@ -663,7 +644,7 @@ def main():
                 print(int(meu_grafo.tem_ciclo()))
             case 4:
                 if not meu_grafo.is_direcionado:
-                    print(meu_grafo.conta_componentes_conexas())
+                    print(meu_grafo.conta_componentes_conexas()) 
                 else:
                     print("-1")
             case 5:
@@ -691,17 +672,23 @@ def main():
                 else:
                     print("-1")
             case 11:
-                print(meu_grafo.ordenacao_topologica(meu_grafo.matriz_adjacencia))
+                if not meu_grafo.tem_ciclo() and meu_grafo.is_direcionado:
+                    print(meu_grafo.ordenacao_topologica(meu_grafo.matriz_adjacencia))
+                else:
+                    print("-1")
             case 12:
                 if not meu_grafo.is_direcionado:
                     print(meu_grafo.shortest_path())
                 else:
                     print("-1")
             case 13:
-                print(meu_grafo.ford_fulkerson())
+                if meu_grafo.is_direcionado:
+                    print(meu_grafo.ford_fulkerson())
+                else:
+                    print("-1")
             case 14:
                 if meu_grafo.is_direcionado:
-                    print(meu_grafo.fecho_transitivo_vertice(meu_grafo.matriz_adjacencia))
+                    print(meu_grafo.fecho_transitivo())
                 else:
                     print("-1")
             case _:
