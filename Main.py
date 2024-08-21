@@ -167,7 +167,7 @@ class Graph:
                     return False
 
         return True  # se todas as condições forem atendidas, o grafo é euleriano
-    
+
     def tem_ciclo(self) -> bool:  # função que verifica se há um ciclo no grafo
         visitados = [False] * self.n_vertices  # vetor com os ertices visitados em cada iteração, para garantir a verificação de todos os conjuntos
 
@@ -178,7 +178,7 @@ class Graph:
         return False
 
     def dfs_ciclo(self, start, visitados) -> bool:  # dfs que verifica a existência de ciclos
-        visitados_atual = [False] * self.n_vertices 
+        visitados_atual = [False] * self.n_vertices
         pilha = [start]
         pais = [-1] * self.n_vertices  # vetor que registra o pai de cada vértice
         pais[start] = -1
@@ -198,7 +198,7 @@ class Graph:
                         pilha.append(vizinho)
 
         return False
-        
+
     def retorna_ancestrais(self, inicial, pais) -> list:  # retorna os ancestrais de uma folha em relação a raiz
         vetor_ancestrais = []
         filho = inicial
@@ -208,8 +208,8 @@ class Graph:
             vetor_ancestrais.append(pai)
             filho = pai
 
-        return vetor_ancestrais 
-    
+        return vetor_ancestrais
+
     def conta_componentes_conexas(self) -> int:  # retorna quantos componentes conexos tem um grafo não orientado
         visitados = [False] * self.n_vertices
         n_componentes = 0
@@ -233,7 +233,7 @@ class Graph:
                 for vizinho in range(self.n_vertices):
                     if self.matriz_adjacencia[v][vizinho] != -1 and not visitados[vizinho]:
                         pilha.append(vizinho)
-    
+
     def kosaraju(self) -> int:  # verifica quantos componentes conexos tem um grafo orientado
         # Passo 1: Fazer a primeira DFS para calcular a ordem de término dos vértices
         visitados = [False] * self.n_vertices
@@ -344,7 +344,7 @@ class Graph:
             # Adiciona os vizinhos não visitados na pilha
             for vizinho in range(self.n_vertices - 1, -1, -1):  # Ordem inversa para simular a chamada recursiva
                 if self.matriz_adjacencia[v][vizinho] != -1 and not visitados[vizinho]:
-                    pilha.append(vizinho)   
+                    pilha.append(vizinho)
 
     def conta_pontes(self) -> int:  # conta as arestas pontes existentes em um grafo
         # Inicializações
@@ -410,9 +410,9 @@ class Graph:
         string_id_aresta = ''
         for id_aresta in sorted(arestas_arvore):
             string_id_aresta += str(id_aresta) + '  '
-        
+
         return string_id_aresta
-    
+
     def imprime_arvore_largura(self) -> str:  # BFS que imprime o id das arestas utilizadas na busca
         visitados = [False] * self.n_vertices
         fila = [(0, -1)]  # fila com tuplas (vértice atual, aresta usada para chegar aqui)
@@ -438,7 +438,7 @@ class Graph:
         string_id_aresta = ''
         for id_aresta in sorted(arestas_arvore):
             string_id_aresta += str(id_aresta) + '  '
-        
+
         return string_id_aresta
 
     def get_edge_id(self, v1, v2):  # pega o id de aresta através do par de vertices
@@ -450,9 +450,9 @@ class Graph:
             for edge in self.edges:
                 if (edge[1] == v1 and edge[2] == v2) or (edge[1] == v2 and edge[2] == v1):
                     return edge[0]
-                
+
         return -1
-    
+
     def prim(self) -> int:
         if not self.edges:
             return -1
@@ -502,11 +502,11 @@ class Graph:
             return mst_weight
         else:
             return -1
-        
+
     def has_equal_weight(self):
         if not self.edges:
             return True
-        
+
         first_weight = self.edges[0][3]
 
         for _, _, _, weight in self.edges:
@@ -514,7 +514,7 @@ class Graph:
                 return False  # Se encontrar uma aresta com peso diferente, retorna False
 
         return True  # Se todas as arestas têm o mesmo peso, retorna True
-        
+
     def dijkstra(self, start_vertex):
         # Inicializa as distâncias com infinito
         distances = {v: float('infinity') for v in range(self.n_vertices)}
@@ -562,7 +562,7 @@ class Graph:
 
     def shortest_path(self):
         if self.has_equal_weight():
-           return -1
+            return -1
 
         start_vertex, end_vertex = 0, self.n_vertices - 1
         distances = self.dijkstra(start_vertex)
@@ -586,7 +586,7 @@ class Graph:
                 dfs(v)
 
         # Retorna a pilha invertida (a ordem topológica)
-        
+
         pilha = ' '.join(map(str, pilha))
 
         return pilha
@@ -640,11 +640,11 @@ class Graph:
                 capacity[v][u] += path_flow
                 v = parent[v]
 
-        return max_flow   
+        return max_flow
 
 
 def main():
-    
+
     close_program = False
     meu_grafo = Graph()
     meu_grafo.read_graph_data()
@@ -688,9 +688,9 @@ def main():
                 if not meu_grafo.is_direcionado:
                     print(meu_grafo.prim())
                 else:
-                    print("-1") 
+                    print("-1")
             case 11:
-                print(meu_grafo.ordenacao_topologica(meu_grafo.matriz_adjacencia)) 
+                print(meu_grafo.ordenacao_topologica(meu_grafo.matriz_adjacencia))
             case 12:
                 if not meu_grafo.is_direcionado:
                     print(meu_grafo.shortest_path())
