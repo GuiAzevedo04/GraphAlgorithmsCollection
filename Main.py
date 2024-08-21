@@ -419,7 +419,7 @@ class Graph:
         arestas_arvore = []
 
         while fila:
-            v_atual, id_aresta = fila.pop()
+            v_atual, id_aresta = fila.pop(0)
             if not visitados[v_atual]:
                 visitados[v_atual] = True
                 if id_aresta != -1:
@@ -561,11 +561,8 @@ class Graph:
         return visitados
 
     def shortest_path(self):
-        if self.is_direcionado:
-            return -1
-
-        if not self.has_equal_weight():
-            return -1
+        if self.has_equal_weight():
+           return -1
 
         start_vertex, end_vertex = 0, self.n_vertices - 1
         distances = self.dijkstra(start_vertex)
@@ -589,7 +586,10 @@ class Graph:
                 dfs(v)
 
         # Retorna a pilha invertida (a ordem topológica)
-        return pilha[::-1]
+        
+        pilha = ' '.join(map(str, pilha))
+
+        return pilha
 
     def ford_fulkerson(self) -> int:
         # Inicializa o fluxo máximo
@@ -644,7 +644,7 @@ class Graph:
 
 
 def main():
-
+    
     close_program = False
     meu_grafo = Graph()
     meu_grafo.read_graph_data()
@@ -653,13 +653,11 @@ def main():
 
         match meu_grafo.instrucoes[0]:
             case 0:
-                # print(int(meu_grafo.verifica_conexidade()))
-                print("depende da funcao dfs_vertices_percorridos que tá quebrada")
+                print(int(meu_grafo.verifica_conexidade()))
             case 1:
                 print(int(meu_grafo.verifica_bipartido()))
             case 2:
-                # print(int(meu_grafo.verifica_euleriano()))
-                print("depende da funcao dfs_vertices_percorridos que tá quebrada")
+                print(int(meu_grafo.verifica_euleriano()))
             case 3:
                 print(int(meu_grafo.tem_ciclo()))
             case 4:
@@ -687,11 +685,17 @@ def main():
             case 9:
                 print(meu_grafo.imprime_arvore_largura())
             case 10:
-                print("Nao sei qual funcao faz isso, quem souber bota aq")
+                if not meu_grafo.is_direcionado:
+                    print(meu_grafo.prim())
+                else:
+                    print("-1") 
             case 11:
-                print(meu_grafo.ordenacao_topologica(meu_grafo.matriz_adjacencia))
+                print(meu_grafo.ordenacao_topologica(meu_grafo.matriz_adjacencia)) 
             case 12:
-                print(meu_grafo.shortest_path())
+                if not meu_grafo.is_direcionado:
+                    print(meu_grafo.shortest_path())
+                else:
+                    print("-1")
             case 13:
                 print(meu_grafo.ford_fulkerson())
             case 14:
