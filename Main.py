@@ -367,52 +367,48 @@ class Graph:
             pilha = [(v, -1)]  #pilha com tuplas (vértice, pai)
 
             while pilha:
-                atual, pai_atual = pilha.pop()  # Remove o vértice do topo da pilha
+                atual, pai_atual = pilha.pop() 
                 if visitados[atual] == False:
                     visitados[atual] = True
                     if pai_atual != -1:
-                        # Adiciona o ID da aresta se o vértice atual não for o vértice inicial
+                        #adiciona o ID da aresta se o vértice atual não for o vértice inicial
                         id_arestas_usadas.append(self.get_edge_id(pai_atual, atual))
 
-                    # Itera sobre todos os vizinhos do vértice atual, ordenados por ID da aresta
+                    #itera sobre todos os vizinhos do vértice atual, ordenados por ID da aresta
                     for vizinho in reversed(self.lista_adjacencia[atual]):
                         if not visitados[vizinho]:
-                            pilha.append((vizinho, atual))  # Adiciona o vizinho à pilha
+                            pilha.append((vizinho, atual))  
 
             return id_arestas_usadas
 
-        # Executa a DFS a partir do vértice 0
+        #executa a DFS a partir do vértice 0
         ids_aresta = dfs(0)
 
-        # Ordena os IDs de arestas e converte a lista para uma string com IDs separados por espaço
         ids_aresta_string = ' '.join(map(str, ids_aresta))
         return ids_aresta_string
 
-    def imprime_arvore_largura(self) -> str:  # BFS que imprime o id das arestas utilizadas na busca
+    def imprime_arvore_largura(self) -> str:  #BFS que imprime o id das arestas utilizadas na busca
         def bfs(v, grafo):
             visitados = [False] * grafo.n_vertices
             id_arestas_usadas = []
-            fila = [v]  # Usamos uma lista simples para simular a fila
+            fila = [v]  #usamos uma lista simples para simular a fila
             visitados[v] = True
 
             while fila:
-                atual = fila.pop(0)  # Remove o primeiro elemento da fila
-                for vizinho in sorted(grafo.lista_adjacencia[atual]):  # Ordena os vizinhos em ordem lexicográfica
-                    id_aresta = grafo.get_edge_id(atual, vizinho)  # Obtém o id da aresta
-                    # Adiciona os vizinhos à fila
+                atual = fila.pop(0)  #remove o primeiro elemento da fila
+                for vizinho in sorted(grafo.lista_adjacencia[atual]): 
+                    id_aresta = grafo.get_edge_id(atual, vizinho)  #obtém o id da aresta
                     if not visitados[vizinho]:
-                        #print(f"{atual} e {vizinho}")
                         visitados[vizinho] = True
                         fila.append(vizinho)
-                        #print('->', id_aresta)
                         id_arestas_usadas.append(id_aresta)
 
             return id_arestas_usadas
 
-        # Executa o BFS a partir do vértice 0
+        #executa o BFS a partir do vértice 0
         ids_aresta = bfs(0, self)
 
-        # Converte a lista para uma string onde os IDs estão separados por espaço
+        #converte a lista para uma string onde os IDs estão separados por espaço
         ids_aresta_string = ' '.join(map(str, ids_aresta))
         return ids_aresta_string
 
