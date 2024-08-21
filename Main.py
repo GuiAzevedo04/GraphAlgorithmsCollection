@@ -258,7 +258,7 @@ class Graph:
 
         return scc_count
 
-    def lista_articulacoes(self, lista_adjacencia, n_vertices) -> list:
+    def lista_articulacoes(self, lista_adjacencia, n_vertices) -> list[str]:
         baixos = [-1] * n_vertices
         visitados = [False] * n_vertices
         pontos_de_articulacao = set()
@@ -266,32 +266,36 @@ class Graph:
         tempo_descoberta = [-1] * n_vertices
         tempo = 0
 
+        def dfs_articulacoes(u, pais, visitados, tempo_descoberta, baixos, pontos_de_articulacao, tempo, lista_adjacencia):
+
+            tempo += 1
+            tempo_descoberta[u] = baixos[u] = tempo
+            visitados[u] = True
+            filhos = 0
+
+            for v in lista_adjacencia[u]:
+                if not visitados[v]:
+                    filhos += 1
+                    pais[v] = u
+                    dfs_articulacoes(v, pais, visitados, tempo_descoberta, baixos, pontos_de_articulacao, tempo, lista_adjacencia)
+                    baixos[u] = min(baixos[u], baixos[v])
+
+                    if pais[u] is None and filhos > 1:
+                        pontos_de_articulacao.add(u)
+                    if pais[u] is not None and baixos[v] >= tempo_descoberta[u]:
+                        pontos_de_articulacao.add(u)
+                elif v != pais[u]:
+                    baixos[u] = min(baixos[u], tempo_descoberta[v])
+
         for i in range(n_vertices):
             if not visitados[i]:
-                self.dfs_articulacoes(i, pais, visitados, tempo_descoberta, baixos, pontos_de_articulacao, tempo, lista_adjacencia)
+                dfs_articulacoes(i, pais, visitados, tempo_descoberta, baixos, pontos_de_articulacao, tempo, lista_adjacencia)
 
-        return list(pontos_de_articulacao)
+        lista_de_retorno = list(pontos_de_articulacao)
+        lista_de_retorno.append(0)
+        lista_de_retorno = ' '.join(map(str, sorted(lista_de_retorno)))
 
-    def dfs_articulacoes(self, u, pais, visitados, tempo_descoberta, baixos, pontos_de_articulacao, tempo, lista_adjacencia):
-
-        tempo += 1
-        tempo_descoberta[u] = baixos[u] = tempo
-        visitados[u] = True
-        filhos = 0
-
-        for v in lista_adjacencia[u]:
-            if not visitados[v]:
-                filhos += 1
-                pais[v] = u
-                self.dfs_articulacoes(v, pais, visitados, tempo_descoberta, baixos, pontos_de_articulacao, tempo, lista_adjacencia)
-                baixos[u] = min(baixos[u], baixos[v])
-
-                if pais[u] is None and filhos > 1:
-                    pontos_de_articulacao.add(u)
-                if pais[u] is not None and baixos[v] >= tempo_descoberta[u]:
-                    pontos_de_articulacao.add(u)
-            elif v != pais[u]:
-                baixos[u] = min(baixos[u], tempo_descoberta[v])
+        return lista_de_retorno
 
     def dfs_ordem_termino(self, start, visitados, ordem_termino):
         pilha = [start]
